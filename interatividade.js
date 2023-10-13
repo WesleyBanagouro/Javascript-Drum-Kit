@@ -2,18 +2,36 @@ var alturaTela = window.screen.height;
 var larguraTela = window.screen.width;
 
 function playSound(e) {
-  const keyCode = e.keyCode || e.target.getAttribute("data-key"); // Usando o atributo data-key do elemento clicado em dispositivos móveis
+  let keyCode;
+  if (e.keyCode) {
+    keyCode = e.keyCode;
+  } else if (e.target && e.target.getAttribute("data-key")) {
+    keyCode = e.target.getAttribute("data-key");
+  } else {
+    return;
+  }
 
   audio = document.querySelector(`audio[data-key="${keyCode}"]`);
   tecla = document.querySelector(`div[data-key="${keyCode}"]`);
-  
+
   if (!audio) return;
-  
+
+  if (tecla.classList.contains("playing")) return;
+
   audio.currentTime = 0;
   audio.play();
-  
+
   tecla.classList.add("playing");
 }
+
+const keys = document.querySelectorAll(".key");
+keys.forEach((key) => {
+  key.addEventListener("transitionend", removeTransition);
+  key.addEventListener("click", () => {
+    playSound({ target: key });
+  });
+});
+
 
 
 addEventListener("keydown", playSound);
@@ -30,16 +48,6 @@ if (alturaTela <= 700 && larguraTela <= 400) {
     }
   });
 }
-
-
-const keys = document.querySelectorAll(".key");
-keys.forEach((key) => {
-  key.addEventListener("transitionend", removeTransition);
-  key.addEventListener("click", () => {
-    const keyCode = key.getAttribute("data-key");
-    playSound({ keyCode });
-  });
-});
 
 function removeTransition(e) {
   if (e.propertyName !== "transform") return;
