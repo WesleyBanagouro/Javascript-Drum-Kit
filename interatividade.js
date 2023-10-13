@@ -19,9 +19,12 @@ if (alturaTela <= 700 && larguraTela <= 400) {
     if (target) {
       const keyCode = target.getAttribute("data-key");
       playSound({ keyCode });
+      // Adicione o método preventDefault() para evitar que o evento padrão seja executado
+      e.preventDefault();
     }
   });
 }
+
 
 const keys = document.querySelectorAll(".key");
 keys.forEach((key) => {
