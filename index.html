@@ -59,9 +59,28 @@
   <audio data-key="76" src="sounds/tink.wav"></audio>
 
 <script>
-    window.addEventListener('keydown', function(e){
-        console.log(e.keyCod);
-    });
+
+    function playSound(e) { // função para tocar sons
+        audio = document.querySelector(`audio[data-key="${e.keyCode}"]`);
+        tecla = document.querySelector(`div[data-key="${e.keyCode}"]`);
+        if(!audio) return;
+        audio.currentTime = 0;
+        audio.play();
+        tecla.classList.add("playing");
+    };
+
+    addEventListener('keydown', playSound);
+
+    keys = document.querySelectorAll('.key');
+    keys.forEach(key => key.addEventListener('transitionend', removeTransition));
+
+    function removeTransition(e) {
+        if (e.propertyName !== 'transform') return;
+        this.classList.remove('playing');
+    }
+
+    
+    
 
 </script>
 
