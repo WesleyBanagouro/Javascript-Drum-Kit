@@ -69,20 +69,27 @@
       audio.currentTime = 0;
       audio.play();
       tecla.classList.add("playing");
-    };
+    }
+
+    addEventListener('keydown', playSound)
   
-    keys = document.querySelectorAll('.key');
+    if (alturaTela <= 700 && larguraTela <= 400) {
+      addEventListener('touchstart', function (e) {
+        // Verifique se o evento de toque foi acionado em uma tecla
+        const target = e.target.closest('.key');
+        if (target) {
+          const keyCode = target.getAttribute('data-key');
+          playSound({ keyCode });
+        }
+      });
+    }
+  
+    const keys = document.querySelectorAll('.key');
     keys.forEach(key => {
       key.addEventListener('transitionend', removeTransition);
-      key.addEventListener('click', (e) => {
+      key.addEventListener('click', () => {
         const keyCode = key.getAttribute('data-key');
-        playSound({ keyCode: keyCode });
-        e.preventDefault(); // Impede o evento 'click' padrão de ser acionado
-      });
-      key.addEventListener('touchstart', (e) => {
-        const keyCode = key.getAttribute('data-key');
-        playSound({ keyCode: keyCode });
-        e.preventDefault(); // Impede o evento 'click' padrão de ser acionado
+        playSound({ keyCode });
       });
     });
   
@@ -91,7 +98,6 @@
       this.classList.remove('playing');
     }
   </script>
-  
 
 
 </body>
