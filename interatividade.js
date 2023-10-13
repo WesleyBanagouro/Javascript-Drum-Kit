@@ -1,55 +1,59 @@
-var alturaTela = window.screen.height;
-var larguraTela = window.screen.width;
-
-function playSound(e) {
-  let keyCode;
-  if (e.keyCode) {
-    keyCode = e.keyCode;
-  } else if (e.target && e.target.getAttribute("data-key")) {
-    keyCode = e.target.getAttribute("data-key");
-  } else {
-    return;
-  }
-
-  audio = document.querySelector(`audio[data-key="${keyCode}"]`);
-  tecla = document.querySelector(`div[data-key="${keyCode}"]`);
-
-  if (!audio) return;
-
-  if (tecla.classList.contains("playing")) return;
-
-  audio.currentTime = 0;
-  audio.play();
-
-  tecla.classList.add("playing");
+function removeTransition(e) {
+  if (e.propertyName !== 'transform') return;
+  e.target.classList.remove('playing');
 }
 
-const keys = document.querySelectorAll(".key");
-keys.forEach((key) => {
-  key.addEventListener("transitionend", removeTransition);
-  key.addEventListener("click", () => {
-    playSound({ target: key });
+function playSound(key) {
+  const audio = document.querySelector(`audio[data-key="${key.dataset.key}"]`);
+  if (!audio) return;
+
+  key.classList.add('playing');
+  audio.currentTime = 0;
+  audio.play();
+}
+
+function addClickEventListeners() {
+  const keys = Array.from(document.querySelectorAll('.key'));
+  keys.forEach(key => {
+    key.addEventListener('click', () => playSound(key));
+    key.addEventListener('transitionend', removeTransition);
   });
-});
+}
 
+function addTouchEventListeners() {
+  const keys = Array.from(document.querySelectorAll('.key'));
+  let isTouching = false;
 
+  keys.forEach(key => {
+    key.addEventListener('touchstart', () => {
+      isTouching = true;
+      playSound(key);
+    });
 
-addEventListener("keydown", playSound);
+    key.addEventListener('touchend', () => {
+      isTouching = false;
+      removeTransition({ propertyName: 'transform', target: key });
+    });
+  });
 
-if (alturaTela <= 700 && larguraTela <= 400) {
-  addEventListener("touchstart", function (e) {
-    // Verifique se o evento de toque foi acionado em uma tecla
-    const target = e.target.closest(".key");
-    if (target) {
-      const keyCode = target.getAttribute("data-key");
-      playSound({ keyCode });
-      // Adicione o método preventDefault() para evitar que o evento padrão seja executado
-      e.preventDefault();
+  // Close the audio element if the user swipes the finger off the key
+  document.addEventListener('touchmove', (e) => {
+    if (isTouching) {
+      const touchedKey = keys.find(key => key === e.target || key.contains(e.target));
+      if (!touchedKey) isTouching = false;
     }
   });
 }
 
-function removeTransition(e) {
-  if (e.propertyName !== "transform") return;
-  this.classList.remove("playing");
+// Verifique o tamanho da tela e adicione os ouvintes de eventos apropriados
+if (window.innerWidth <= 768) {
+  addTouchEventListeners();
+} else {
+  addClickEventListeners();
 }
+
+// Adicione o ouvinte de evento de teclado
+window.addEventListener('keydown', (e) => {
+  const key = document.querySelector(`div[data-key="${e.keyCode}"]`);
+  if (key) playSound(key);
+});
