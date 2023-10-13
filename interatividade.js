@@ -2,13 +2,19 @@ var alturaTela = window.screen.height;
 var larguraTela = window.screen.width;
 
 function playSound(e) {
-  audio = document.querySelector(`audio[data-key="${e.keyCode}"]`);
-  tecla = document.querySelector(`div[data-key="${e.keyCode}"]`);
+  const keyCode = e.keyCode || e.target.getAttribute("data-key"); // Usando o atributo data-key do elemento clicado em dispositivos móveis
+
+  audio = document.querySelector(`audio[data-key="${keyCode}"]`);
+  tecla = document.querySelector(`div[data-key="${keyCode}"]`);
+  
   if (!audio) return;
+  
   audio.currentTime = 0;
   audio.play();
+  
   tecla.classList.add("playing");
 }
+
 
 addEventListener("keydown", playSound);
 
