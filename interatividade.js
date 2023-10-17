@@ -36,13 +36,7 @@ function addTouchEventListeners() {
     });
   });
 
-  // Close the audio element if the user swipes the finger off the key
-  document.addEventListener('touchmove', (e) => {
-    if (isTouching) {
-      const touchedKey = keys.find(key => key === e.target || key.contains(e.target));
-      if (!touchedKey) isTouching = false;
-    }
-  });
+
 }
 
 // Verifique o tamanho da tela e adicione os ouvintes de eventos apropriados
